@@ -9,8 +9,8 @@ public class BuildingsController : MonoBehaviour {
     [SerializeField] private BuildingBase prototype;
     [HideInInspector] public BuildingBase[] buildings;
 
-    private float profit;
-    private float price;
+    public float Profit { get; private set; }
+    public float Price { get; private set; }
     private float basicPrice;
 
     private void Start()
@@ -18,21 +18,23 @@ public class BuildingsController : MonoBehaviour {
         switch (type)
         {
             case BuildingType.FARM:
-                profit = 1;
-                price = 20;
+                Profit = 1;
+                Price = 20;
                 break;
             case BuildingType.FACTORY:
-                profit = 10;
-                price = 400;
+                Profit = 10;
+                Price = 400;
                 break;
             case BuildingType.BANK:
-                profit = 100;
-                price = 6000;
+                Profit = 100;
+                Price = 6000;
                 break;
             default:
                 break;
         }
-        basicPrice = price;
+        basicPrice = Price;
+        UIController.Instance.SetBuildingPrice(type, Price);
+        UIController.Instance.SetButtonInteractable(type, GameEngine.FarmValue >= Price);
     }
 
     public int GetBuildingsAmount()
@@ -41,14 +43,9 @@ public class BuildingsController : MonoBehaviour {
         return buildings.Length;
     }
 
-    public float GetPrototypeProfit()
-    {
-        return profit;
-    }
-
     public void CreateBuilding(Vector3 newPosition)
     {
-        if (GameEngine.FarmValue >= price)
+        if (GameEngine.FarmValue >= Price)
         {
             BuildingBase newBuilding = Instantiate(prototype, this.transform);
             newBuilding.transform.position = newPosition * 10;
@@ -60,14 +57,14 @@ public class BuildingsController : MonoBehaviour {
                 GameEngine.CoordinateZ++;
             }
 
-            GameEngine.FarmValue -= price;
+            GameEngine.FarmValue -= Price;
             CurrentPrototypePrice();
         }
-        Debug.LogError(type + ": " + price);
     }
 
     private void CurrentPrototypePrice()
     {
-        price = GetBuildingsAmount() * GetBuildingsAmount() * profit + basicPrice;
+        Price = GetBuildingsAmount() * GetBuildingsAmount() * Profit + basicPrice;
+        UIController.Instance.SetBuildingPrice(type, Price);
     }
 }

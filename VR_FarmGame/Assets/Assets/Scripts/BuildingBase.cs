@@ -4,4 +4,5 @@ using UnityEngine;
 
 public class BuildingBase : MonoBehaviour {
 
+    public BuildingType type;
 }
